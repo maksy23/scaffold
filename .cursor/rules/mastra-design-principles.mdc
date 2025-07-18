@@ -1,0 +1,52 @@
+---
+trigger: glob
+globs: **/*.ts
+---
+
+# Mastra Design Principles
+
+## Core Architecture
+- Agents are capability containers (tools + instructions); they never control flow  
+- Workflows own all orchestration, control flow, and state management  
+- Steps are atomic, stateless execution units with clear input/output schemas  
+- Tools are single-purpose functions that do one thing well  
+
+## Separation of Concerns
+- Tools execute actions  
+- Agents coordinate tools with AI reasoning  
+- Steps wrap executables with validation  
+- Workflows orchestrate steps with control flow  
+
+## Control Flow Rules
+- All loops, recursion, and retries belong in workflows  
+- All branching and conditional logic belongs in workflows  
+- All suspension and resumption belongs in workflows  
+- Agents only decide HOW to use tools, never WHEN to execute  
+
+## State Management
+- Steps must be stateless pure functions  
+- Agents are stateless; they process and return  
+- Workflows manage all state and execution context  
+- Use Zod schemas for all input/output validation  
+
+## Decision Framework
+- Needs loops or recursion? → Use a workflow  
+- Needs branching or conditions? → Use a workflow  
+- Needs to wait or suspend? → Use a workflow  
+- Needs LLM reasoning? → Use an agent (as a step)  
+- Transforms data? → Use a step  
+- Single focused action? → Use a tool  
+
+## Anti-Patterns
+- Never implement recursion in agents  
+- Never put control flow in agent instructions  
+- Never maintain state in steps  
+- Never mix orchestration with capability  
+
+## Code Style
+- Use factory functions: `createWorkflow()`, `createStep()`, `createTool()` (exception: `new Agent()`)  
+- Always use kebab-case for IDs (e.g., `process-order`, `fetch-data`)  
+- Structure: `src/mastra/` with subdirs `agents/`, `workflows/`, `tools/`  
+- All inputs/outputs require Zod schemas for validation  
+- Configure storage once at Mastra instance level; use **LibSQL** for development  
+- Compose freely: tools/agents can be steps, workflows can nest

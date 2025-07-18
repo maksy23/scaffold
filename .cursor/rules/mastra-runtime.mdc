@@ -1,0 +1,184 @@
+---
+trigger: glob
+globs: **/*.ts
+---
+
+# Agent with Memory
+
+- Demonstrates how to instantiate an `Agent` with:
+  - an OpenAI model
+  - a single `weatherTool`
+  - a `Memory` instance for long-term context
+- Shows how to generate a response tied to a specific `resourceId` and `threadId`.
+
+```ts
+const agent = new Agent({
+  model: openai("gpt-4o-mini"),
+  tools: [weatherTool],
+  memory: new Memory()
+});
+
+await agent.generate("Hello", { 
+  resourceId: "user_123", 
+  threadId: "chat_1" 
+});
+```
+
+---
+
+# Human-in-the-Loop Workflow
+
+## Step Execution
+
+- Uses `suspend()` to pause execution until human approval.
+- Returns `{ approved: false }` while waiting and `{ approved: true }` once resumed.
+
+```ts
+execute: async ({ inputData, resumeData, suspend }) => {
+  if (!resumeData?.approved) {
+    await suspend({ reason: "Needs approval" });
+    return { approved: false };
+  }
+  return { approved: true };
+}
+```
+
+### Resume Later
+
+- Detects `suspended` status and resumes the workflow with `resumeData`.
+
+```ts
+// Resume later
+if (result.status === "suspended") {
+  await run.resume({
+    step: result.suspended[0],
+    resumeData: { approved: true }
+  });
+}
+```
+
+---
+
+# Streaming Workflow Results
+
+- Streams incremental tool output and step results in real time.
+- Handles different chunk types via a `switch` statement.
+
+```ts
+const run = await workflow.createRunAsync();
+const stream = await run.stream({ inputData });
+
+for await (const chunk of stream) {
+  switch (chunk.type) {
+    case 'tool-call-delta':
+      process.stdout.write(chunk.argsTextDelta);
+      break;
+    case 'step-result':
+      console.log(`Done: ${chunk.payload.status}`);
+      break;
+  }
+}
+```
+
+---
+
+# RuntimeContext Sharing
+
+- Stores arbitrary key/value pairs (e.g., `apiKey`, `userTier`).
+- Makes them available inside steps via `runtimeContext.get()`.
+
+```ts
+const ctx = new RuntimeContext();
+ctx.set("apiKey", process.env.API_KEY);
+ctx.set("userTier", "premium");
+
+await run.start({ 
+  inputData, 
+  runtimeContext: ctx 
+});
+
+// In step
+execute: async ({ runtimeContext }) => {
+  const apiKey = runtimeContext.get("apiKey");
+}
+```
+
+---
+
+# Error Recovery with Suspension
+
+- Suspends the step when encountering a `RATE_LIMIT` error so the workflow can be retried later.
+- Continues to throw non-recoverable errors.
+
+```ts
+execute: async ({ suspend }) => {
+  try {
+    return await apiCall();
+  } catch (error) {
+    if (error.code === 'RATE_LIMIT') {
+      await suspend({ 
+        reason: "Rate limited",
+        retryAfter: error.retryAfter 
+      });
+      return { status: "paused" };
+    }
+    throw error;
+  }
+}
+```
+
+---
+
+# Tool as Workflow Step
+
+- Wraps an existing tool (`weatherTool`) with `createStep()`.
+- Maps static input (`city: "London"`) before invoking the step.
+
+```ts
+const weatherStep = createStep(weatherTool);
+
+const workflow = createWorkflow({ ... })
+  .map({ city: "London" })
+  .then(weatherStep)
+  .commit();
+```
+
+---
+
+# Parallel Processing
+
+- Executes multiple data-fetching steps concurrently.
+- Combines the results in a final aggregation step.
+
+```ts
+const workflow = createWorkflow({ ... })
+  .parallel([
+    fetchUserStep,
+    fetchOrdersStep,
+    fetchPreferencesStep
+  ])
+  .then(combineDataStep)
+  .commit();
+```
+
+---
+
+# Dynamic Workflow Execution
+
+- Invokes another workflow (`order-flow`) inside a tool.
+- Returns the status from the nested workflow run.
+
+```ts
+const processOrderTool = createTool({
+  execute: async ({ context, mastra }) => {
+    const workflow = mastra.getWorkflow("order-flow");
+    const run = await workflow.createRunAsync();
+    
+    const result = await run.start({
+      inputData: { orderId: context.orderId }
+    });
+    
+    return { status: result.result.status };
+  }
+});
+```

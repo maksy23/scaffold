@@ -1,0 +1,51 @@
+---
+trigger: always_on
+---
+
+## 1. Sensitive Data Protection
+
+- **NEVER** commit API keys, passwords, or tokens directly in code
+- Use environment variables for all sensitive configuration
+- Include sensitive files in .gitignore (e.g., .env files)
+- Alert the user if you detect hardcoded secrets or credentials
+
+## 2. Security Best Practices
+
+- Validate and sanitize all user inputs
+- Implement proper authentication and authorization checks
+- Follow secure coding practices for the specific language/framework
+- Use parameterized queries for database operations to prevent SQL injection
+
+## 3. Dependency Security
+
+- Suggest regular updates for dependencies with known vulnerabilities
+- Recommend security scanning tools when appropriate
+- Avoid using deprecated or unmaintained libraries
+
+## 4. Secure Configuration
+
+- Add example configuration files with dummy values (e.g., .env.example)
+- Document security-related configuration options
+- Use secure defaults for all settings
+
+## 5. HTTPS and Secure Communication
+
+- Always use HTTPS for API endpoints
+- Implement proper CORS policies
+- Set secure headers (Content-Security-Policy, Strict-Transport-Security, etc.)
+- Use secure cookies with appropriate flags (Secure, HttpOnly, SameSite)
+
+## 6. Authentication and Authorization
+
+- Implement proper authentication mechanisms
+- Use industry standard authentication libraries when possible
+- Follow the principle of least privilege for authorization
+- Implement proper session management
+- Use secure password storage with strong hashing algorithms
+
+## 7. Security Monitoring and Auditing
+
+- Implement proper logging for security events
+- Consider adding security monitoring tools
+- Regularly audit security practices
+- Implement rate limiting for sensitive endpoints

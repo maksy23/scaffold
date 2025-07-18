@@ -1,0 +1,68 @@
+---
+trigger: glob
+globs: **/*.ts
+---
+
+# Mastra Agent Guidelines
+
+## Agent Definition
+- Always use `new Agent()` from `@mastra/core/agent`
+- Name agents with descriptive nouns (e.g., `supportAgent`, `researchAssistant`)
+- Keep instructions concise and role-focused
+- Use dynamic instructions only when behavior changes per-user
+
+## Code Style
+```ts
+export const agentName = new Agent({
+  name: "agent-name",
+  description: "What this agent does", // Required for MCP exposure
+  instructions: "You are a [role]. You [key behaviors].",
+  model: openai("gpt-4o-mini"),
+  tools: { toolOne, toolTwo },
+});
+```
+
+## Tool Usage
+- Import tools explicitly; never define tools inline
+- Group related tools in the `tools` object
+- Use dynamic tools only for user-specific access control
+- Prefer tool composition over large multi-purpose tools
+
+## Memory Configuration
+- Always use the new memory parameter format
+- Provide both `thread` and `resource` when using memory
+- Configure memory options explicitly for predictable behavior
+
+```ts
+await agent.generate("Hello", {
+  memory: {
+    thread: "thread-123",
+    resource: "user-456",
+    options: { lastMessages: 10 }
+  }
+});
+```
+
+## Best Practices
+- One agent per file in `src/mastra/agents/`
+- Export agents as named exports
+- Keep agent instructions under 500 characters
+- Use structured output (`output` or `experimental_output`) for predictable responses
+- Set `maxSteps` based on expected tool usage (default: 1)
+- Use `onStepFinish` for debugging multi-step operations
+
+## Anti-Patterns
+- Don't implement retry logic in instructions
+- Don't reference other agents in instructions
+- Don't use agents for simple data transformation
+- Don't create "controller" agents that orchestrate other agents
+- Avoid runtime agent creation; define agents at module level
+
+## Summary
+- Use `new Agent()` from `@mastra/core/agent`
+- Combine LLM, tools, and memory for intelligent responses
+- Always provide `resourceId` and `threadId` for memory to work
+- Enable memory with `memory: new Memory()` for conversation context
+- Use `generate()` for single responses, `stream()` for real-time output
+- Limit tool iterations with `maxSteps` parameter
+- Store in `src/mastra/agents/` with descriptive names

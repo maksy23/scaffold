@@ -1,0 +1,61 @@
+---
+trigger: model_decision
+description: This should trigger when tests are inadequate, out of date or substantial new functionality is added
+---
+
+## 1. Test Coverage
+
+- New features must include appropriate tests
+- Bug fixes should include regression tests
+- UI components should have snapshot tests
+- Critical business logic must have unit tests
+- Data fetching and API interactions should have mocked tests
+
+## 2. Test Structure
+
+### 2.1 Unit Tests
+
+### 2.2 Integration Tests
+
+- Focus on component interactions
+- Test user flows and journeys
+- Verify that components work together correctly
+- Mock external dependencies but test internal interactions
+
+### 2.3 End-to-End Tests
+
+- Test critical user flows from start to finish
+- Run against a test environment when possible
+- Include authentication flows where applicable
+- Test error handling and edge cases
+
+## 3. Testing Tools
+
+### 3.1 Component Testing
+
+- Use React Testing Library for component tests
+- Follow the "test behavior, not implementation" principle
+- Test accessibility concerns
+- Use mock service workers for API mocking
+
+### 3.2 Performance Testing
+
+- Include load time metrics for critical pages
+- Test component rendering performance
+- Monitor and test bundle size
+- Test application under various network conditions
+
+## 4. Test Maintainability
+
+- Keep tests DRY with shared fixtures and setup
+- Use descriptive test names
+- Organize tests to mirror the structure of the code they're testing
+- Avoid brittle tests that break with minor UI changes
+
+## 5. Test-Driven Development
+
+When applicable, follow a test-driven development approach:
+
+1. Write failing tests first
+2. Implement the minimal code to make tests pass
+3. Refactor while ensuring tests still pass

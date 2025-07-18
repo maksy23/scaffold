@@ -1,0 +1,84 @@
+---
+trigger: glob
+globs: **/*.ts
+---
+
+# Step Definition
+
+- Use `createStep()` from `@mastra/core/workflows`
+- Name steps with descriptive verbs (e.g., `validateInput`, `fetchUserData`)
+- Always define `inputSchema` and `outputSchema` with **Zod**
+- Keep `execute` functions **pure and deterministic**
+
+## Code Style
+
+```ts
+const stepName = createStep({
+  id: "step-name",
+  description: "What this step does",
+  inputSchema: z.object({ ... }),
+  outputSchema: z.object({ ... }),
+  execute: async ({ inputData }) => {
+    // Transform inputData to output
+    return { ... };
+  }
+});
+```
+
+# Execute Function
+
+- Access input via destructured `inputData` parameter
+- Return data matching the `outputSchema` exactly
+- Use `bail()` for early exits with custom output
+- Access context via `runtimeContext` when needed
+- Keep logic focused and single-purpose
+
+# Suspension Support
+
+```ts
+const suspendableStep = createStep({
+  suspendSchema: z.object({ ... }),
+  resumeSchema: z.object({ ... }),
+  execute: async ({ inputData, resumeData, suspend }) => {
+    if (!resumeData?.requiredField) {
+      await suspend({ reason: "Awaiting user input" });
+      return { ... };
+    }
+    // Continue with resumeData
+  }
+});
+```
+
+# Best Practices
+
+- Group related steps in feature-specific files
+- Export steps as named constants
+- Validate and transform data, don't fetch it (use tools for external calls)
+- Return meaningful error messages in output
+- Test steps independently of workflows
+- Use TypeScript inference from schemas
+
+# Composition Patterns
+
+- Wrap agents: `createStep(myAgent)`
+- Wrap tools: `createStep(myTool)`
+- Clone steps: `cloneStep(originalStep, { id: "new-id" })`
+- Chain transformations for complex data flows
+
+# Anti-Patterns
+
+- Don't make external API calls directly (use tools)
+- Don't maintain state between executions
+- Don't reference other steps directly
+- Don't throw errors for control flow (return error states)
+- Avoid side effects in `execute` functions
+
+# Summary
+
+- Use `createStep()` from `@mastra/core/workflows`
+- Define `id`, `inputSchema`, `outputSchema`, and `execute` function
+- `execute` receives: `inputData`, `resumeData`, `suspend`, `bail`, `runCount`, `runId`, `getStepResult`, `getInitData`, `runtimeContext`, `mastra`
+- Use `bail()` for successful early exit, throw errors for failure
+- Suspend with `await suspend()` for human-in-the-loop
+- Wrap agents/tools: `createStep(myAgent)` or `createStep(myTool)`
+- Keep logic atomic and focused on single responsibility

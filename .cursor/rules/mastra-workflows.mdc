@@ -1,0 +1,88 @@
+---
+trigger: glob
+globs: **/*.ts
+---
+
+# Mastra Workflow Guidelines
+
+## Workflow Definition
+
+- Use `createWorkflow()` from `@mastra/core/workflows`
+- Always call `.commit()` to finalize workflow definition
+- Name workflows with action verbs (e.g., `processOrder`, `analyzeDocument`)
+- Define clear input/output schemas with **Zod**
+
+## Code Style
+
+```ts
+export const workflowName = createWorkflow({
+  id: "workflow-name",
+  description: "What this workflow does",
+  inputSchema: z.object({ ... }),
+  outputSchema: z.object({ ... })
+})
+  .then(stepOne)
+  .then(stepTwo)
+  .commit();
+```
+
+## Control Flow Methods
+
+- `.then()` — Sequential execution  
+- `.parallel()` — Concurrent execution  
+- `.branch()` — Conditional paths  
+- `.dowhile()` / `.dountil()` — Loops with conditions  
+- `.foreach()` — Iterate over arrays  
+- `.map()` — Transform data between steps  
+
+## Step Composition
+
+- Import steps; **do not define inline**
+- Use `.map()` to transform data between mismatched schemas
+- Access previous results with:
+  - `inputData`
+  - `getStepResult()`
+  - `getInitData()`
+- Clone steps with `cloneStep()` when reusing in different contexts
+
+## Execution Patterns
+
+```ts
+// Create and run
+const run = await mastra.getWorkflow("workflowName").createRunAsync();
+const result = await run.start({ inputData: { ... } });
+
+// Stream results
+const stream = await run.stream({ inputData: { ... } });
+for await (const chunk of stream.stream) {
+  // handle streamed result
+}
+```
+
+## Best Practices
+
+- One workflow per file in `src/mastra/workflows/`
+- Keep workflows focused on a **single business process**
+- Use **nested workflows** for complex sub-processes
+- Handle errors at the **workflow level**, not in steps
+- Use `bail()` for early successful exits
+- Set **concurrency limits** for `.foreach()` operations
+
+## Anti-Patterns
+
+- ❌ Don't create workflows without schemas  
+- ❌ Don't nest workflows more than **2 levels deep**  
+- ❌ Don't put business logic in `.map()` functions  
+- ❌ Don't create circular workflow dependencies  
+- ❌ Avoid runtime workflow creation  
+
+## Summary
+
+- Use `createWorkflow()` from `@mastra/core/workflows` (new API only)
+- Require **unique `id`** in **kebab-case**, and **must call `.commit()`**
+- Chain with `.then()`, branch with `.branch()`, parallel with `.parallel()`
+- Loop with `.dowhile()`, `.dountil()`, `.foreach({ concurrency })`
+- Pause with `.sleep(ms)`, `.sleepUntil(date)`, `.waitForEvent(name, step)`
+- Transform data between steps using `.map()`
+- Execute with `createRunAsync()` followed by `start()` or `stream()`
+- Register in Mastra instance via the `workflows` property

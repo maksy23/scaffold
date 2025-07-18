@@ -1,0 +1,18 @@
+---
+description: "Commit message formatting standards"
+---
+
+# Commit Message Guidelines
+
+- Commit messages MUST be < 50 characters on the first line
+- Prioritize shorter, grokable messages
+- Only use multi-line descriptions for large or complex changes
+- Follow **Conventional Commit** syntax:
+  `type(scope?): subject`
+  Examples:
+  - `feat(auth): add OAuth2 support`
+  - `fix(api): correct 500 error handling`
+- If the change cannot be described in < 50 chars:
+  1. Keep the first line < 50 chars (summary)
+  2. Add a blank line
+  3. Write additional detail in subsequent lines (72-char wrap is recommended)

@@ -1,0 +1,72 @@
+---
+trigger: glob
+globs: **/*.ts
+---
+
+# Storage Setup
+
+- Configure once at Mastra instance level  
+- Storage is shared by all workflows and memory instances  
+- Default: `LibSQL` for development with `file:./mastra.db`  
+- **Never use `:memory:` in production** — data won't persist  
+
+## Code Style
+
+```ts  
+import { Mastra } from "@mastra/core/mastra";  
+import { LibSQLStore } from "@mastra/libsql";  
+
+export const mastra = new Mastra({  
+  storage: new LibSQLStore({  
+    url: "file:./mastra.db"  // Development  
+  }),  
+  workflows: { ... },  
+  agents: { ... }  
+});  
+```
+
+## Production Storage Options
+
+- **PostgreSQL**  
+  Use `PostgresStore` with a connection string.
+
+- **Upstash**  
+  Serverless Redis-compatible storage.
+
+- **DynamoDB**  
+  Single-table design for AWS.
+
+- **Cloudflare D1**  
+  Edge-compatible SQL storage.
+
+## Storage Responsibilities
+
+- Workflow snapshots for suspend/resume  
+- Memory threads and messages  
+- Resource data for working memory  
+- OpenTelemetry traces  
+- Evaluation results  
+
+## Best Practices
+
+- Use file-based storage for local development  
+- Configure appropriate storage for deployment environment  
+- Monitor storage size for large-scale applications  
+- Enable proper backup strategies for production  
+- Set connection pooling for SQL databases  
+
+## Anti-Patterns
+
+- **Don’t** use in-memory storage for production  
+- **Don’t** configure storage multiple times  
+- **Don’t** access storage directly — use Mastra APIs  
+- **Don’t** mix storage providers in one instance  
+
+## Summary
+
+- Configure once at Mastra instance level — shared by all components  
+- Default: `LibSQL` with `file:./mastra.db` for development  
+- Production options: `PostgreSQL`, `Upstash (serverless)`, `DynamoDB`  
+- Never use `:memory:` in production — data won’t persist  
+- Stores: workflow snapshots, threads, messages, resources, traces, evals  
+- `LibSQL` supports all features including resource-scoped memory
