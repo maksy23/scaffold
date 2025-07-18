@@ -1,0 +1,10 @@
+---
+description: "TypeScript/JavaScript code style standards"
+globs: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+---
+
+Generate code with clear, descriptive identifiers
+• Never use single-letter or truncated variable names (e.g., i, j, arr)
+• In loops, array methods, or any iterator, give each element a full semantic name (e.g., user, product)
+• If an index argument is needed, name it Index (e.g., userIndex), never idx
+Adhere strictly; do not relax these rules

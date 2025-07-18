@@ -1,0 +1,73 @@
+---
+trigger: glob
+globs: **/*.ts
+---
+
+# Memory Configuration
+
+- Memory Configuration
+- Memory Setup
+- Import from `@mastra/memory` and use `new Memory()`
+- Always provide `resourceId` and `threadId` or memory won't persist
+- Default storage: **LibSQL** (SQLite-compatible)
+- Enable semantic search with embedder and vector store
+
+
+# Code Style
+
+```ts
+import { Memory } from "@mastra/memory";
+import { Agent } from "@mastra/core/agent";
+
+const agent = new Agent({
+  model: openai("gpt-4o-mini"),
+  memory: new Memory({
+    storage: new LibSQLStore({
+      url: "file:./memory.db"
+    }),
+    options: {
+      lastMessages: 20,
+      semanticRecall: { topK: 5 }
+    }
+  })
+});
+```
+
+# Thread Management
+
+- `resourceId` – User/entity identifier (e.g., `"user_123"`)
+- `threadId` – Conversation identifier (e.g., `"chat_456"`)
+- Threads organize conversation history
+- Resources enable cross-thread memory
+
+# Memory Options
+
+- `lastMessages` – Number of recent messages (default: **10**)
+- `semanticRecall` – Similar message retrieval
+- `workingMemory` – Persistent user information
+- `processors` – Context management (e.g., **TokenLimiter**) 
+
+# Semantic Search
+
+- `embedder: fastembed`  // Local embedding
+- **OR**
+- `embedder: openai.embedding("text-embedding-3-small")`
+- `vector: new LibSQLVector({ url: "file:./vector.db" })`
+
+# Best Practices
+
+- Always pass `resourceId` and `threadId` to agent methods
+- Use file-based DB for persistence
+- Enable working memory for user profiles
+- Add **TokenLimiter** to prevent context overflow
+- Use resource scope for cross-thread memory
+
+# Additional Notes
+
+- Import from `@mastra/memory`, use `new Memory()` for basic setup.
+- Always provide `resourceId` and `threadId` or memory won't persist.
+- Default storage is **LibSQL**; use `file:./mastra.db` for persistence.
+- Enable semantic search with embedder and vector store.
+- Configure `lastMessages`, `semanticRecall`, `workingMemory` in options.
+- Use **TokenLimiter** processor to prevent context overflow.
+- Resource-scoped memory shares context across all user threads.

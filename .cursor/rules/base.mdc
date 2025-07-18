@@ -1,0 +1,97 @@
+---
+description: "Base development guidelines"
+alwaysApply: true
+---
+
+### 1.1 No Destructive Edits
+
+- Delete code only when you can verify it's not being used elsewhere in the codebase. In all other cases, please explicitly capture user confirmation before deletion
+- Document deleted code in comments if it represents complex logic that might be useful as reference
+- When replacing logic, briefly document the reason for the change
+
+### 1.2 Atomic Changes
+
+- Make changes in complete functional units
+- Ensure the codebase remains in a working state after every change
+- Keep commits logically related to a single purpose
+
+## 2. Planning Before Execution
+
+Always plan significant code changes before implementation:
+
+### 2.1 Required Planning Components
+
+For any non-trivial change, create a plan as a first response to the user and wait for approval before implementation. The plan should include:
+
+- **Problem statement**: What issue is being addressed
+- **Proposed solution**: Technical approach and rationale
+- **Impact assessment**: Which files/components will be modified
+- **Testing strategy**: How changes will be validated
+
+The plan should be concise (bullet points are encouraged) but detailed enough to understand the scope and approach
+
+## 3. Documentation Standards
+
+Documentation must be consistent, complete, and up-to-date:
+
+### 3.1 JSDoc Standards
+
+Complex functions, classes, and critical business logic should have JSDoc comments. Simple utility functions don't require full JSDoc:
+
+### 3.2 Documentation Locations
+
+- Component docs: In README.md files within component directories
+- API docs: In JSDoc format in service files
+- Architecture decisions: In `/docs/architecture-decisions` directory
+- General documentation: In `/docs` directory
+
+## 4. Commit Message Standards
+
+Follow these commit message standards:
+
+- NEVER have the first line longer than 50 characters
+- For larger changes, the first line 50 or less and other descriptions on multiple lines
+
+### 4.1 Conventional Commits Format
+
+Format: `type(scope): description`
+
+Types:
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, semicolons, etc)
+- `refactor`: Code refactoring without changing functionality
+- `perf`: Performance improvements
+- `test`: Adding or updating tests
+- `chore`: Build process, dependencies, etc.
+
+Example:
+
+```
+feat(auth): add password strength indicator to signup form
+```
+
+## 6. Clean-up and Maintenance
+
+Windsurf Cascade must clean up after itself when making changes:
+
+### 6.1 Temporary Files and Branches
+
+- Remove any temporary files created during development
+- Clean up debug code, console logs, and commented-out code after confirming functionality
+- Remove placeholder content after replacing it with actual implementation
+
+### 6.2 Code Hygiene
+
+- Fix any lint errors introduced by changes
+- Run formatting tools after changes
+- Ensure all tests pass before considering work complete
+- Clean up unused imports and dependencies
+
+### 6.3 Environment Consistency
+
+- Ensure environment variables and configuration files remain consistent
+- Document any new environment requirements in README.md
+- Verify build scripts still work after changes

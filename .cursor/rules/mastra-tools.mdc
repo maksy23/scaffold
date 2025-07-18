@@ -1,0 +1,76 @@
+---
+trigger: glob
+globs: **/*.ts
+---
+
+# Mastra Tool Development Guidelines
+
+## Tool Definition
+
+- Use `createTool()` from `@mastra/core/tools`
+- Name tools with action verbs (e.g., `searchDatabase`, `sendEmail`)
+- Write descriptions that help AI understand when/how to use the tool
+- Keep tools focused on a single external interaction
+
+## Code Style
+
+```ts
+export const toolName = createTool({
+  id: "toolName",
+  description: "Does X when Y. Requires Z input.",
+  inputSchema: z.object({ ... }),
+  outputSchema: z.object({ ... }),
+  execute: async ({ context }) => {
+    const { param } = context;
+    // External API call or operation
+    return { ... };
+  }
+});
+```
+
+## Execute Context
+
+- Access validated input via `context` parameter
+- Use `threadId` and `resourceId` for user context
+- Access Mastra instance via `mastra` parameter when needed
+- Handle errors gracefully with `try/catch`
+- Return data matching `outputSchema`
+
+## Best Practices
+
+- One tool per external API endpoint or operation
+- Group related tools in domain-specific files
+- Include example usage in descriptions
+- Make tools idempotent when possible
+- Use environment variables for API keys
+- Add rate limiting for expensive operations
+
+## Tool Descriptions
+
+### ✅ Good: Specific and instructive
+
+```ts
+description: "Fetches current stock price for a ticker symbol (e.g., AAPL, MSFT). Returns price in USD."
+```
+
+### ❌ Bad: Vague
+
+```ts
+description: "Gets stock data"
+```
+
+## Integration Patterns
+
+- Use official SDKs when available  
+- Implement retry logic for unreliable APIs  
+- Transform API responses to consistent schemas  
+- Cache responses when appropriate  
+- Log API calls for debugging
+
+## Anti-Patterns
+
+- Don't create "mega tools" that do multiple things  
+- Don't put business logic in tools (only API interaction)  
+- Don't call other tools from within a tool  
+- Don't modify tool behavior based on `threadId`  
+- Avoid runtime tool creation

@@ -1,0 +1,13 @@
+---
+trigger: model_decision
+description: When crafting a system prompt for an LLM call
+---
+
+A well-crafted system prompt should include:
+
+- Role definition: What the agent is and what it does
+- Core capabilities: What tasks the agent can perform
+- Behavioral guidelines: How the agent should respond and interact
+- Constraints: What the agent should not do or discuss
+- Success criteria: What makes the agent's responses good
+- MCP tools access: What gives the agent context on available tools and when to use them

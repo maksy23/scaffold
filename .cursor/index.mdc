@@ -1,0 +1,16 @@
+---
+description: "Repository-wide development guidelines"
+alwaysApply: true
+---
+
+# Project Overview
+
+This is a development workspace following modern TypeScript/JavaScript practices with comprehensive rules for code quality, commits, and architecture patterns.
+
+## Key Principles
+- Follow atomic development practices
+- Maintain clean, descriptive code
+- Use proper TypeScript typing
+- Follow conventional commit standards
+
+**Note**: Specific rules for different file types and contexts are defined in the `/rules/` directory and will be automatically applied based on file patterns and context.
